@@ -214,22 +214,26 @@ func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (bool, 
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	var users []*model.User
+	currentUserID := ctx.Value("userID").(string)
 	collection := database.GetCollection("users")
+
+	var users []*model.User
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-
 	defer cursor.Close(ctx)
+
 	for cursor.Next(ctx) {
 		var user model.User
 		if err := cursor.Decode(&user); err != nil {
 			return nil, err
 		}
-		users = append(users, &user)
+		// Exclude the current user
+		if user.ID != currentUserID {
+			users = append(users, &user)
+		}
 	}
-
 	return users, nil
 }
 
