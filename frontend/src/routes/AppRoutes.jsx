@@ -4,7 +4,7 @@ import Login from '../pages/Login';
 // import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import Users from '../pages/Users';
-// import Products from '../pages/Products';
+import Products from '../pages/Products';
 
 const AppRoutes = () => (
   <BrowserRouter>
@@ -13,7 +13,7 @@ const AppRoutes = () => (
       {/* <Route path="/register" element={<Register />} /> */}
       <Route path="/" element={<Dashboard />}>
         <Route path="users" element={<Users />} />
-        {/* <Route path="products" element={<Products />} /> */}
+        <Route path="products" element={<Products />} />
       </Route>
     </Routes>
   </BrowserRouter>

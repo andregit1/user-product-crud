@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { createUser, updateUser } from '../features/usersSlice';
+import { createProduct, updateProduct } from '../features/productsSlice';
 
-const UserForm = ({ user, onClose }) => {
-  const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
+const ProductForm = ({ product, onClose }) => {
+  const [name, setName] = useState(product?.name || '');
+  const [price, setPrice] = useState(product?.price || 0);
+  const [stock, setStock] = useState(product?.stock || 0)
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (user) {
-      // Update user
-      dispatch(updateUser({ id: user.id, name, email }));
+    if (product) {
+      // Update product
+      dispatch(updateProduct({ id: product.id, name, email }));
     } else {
-      // Create new user
-      dispatch(createUser({ name, email }));
+      // Create new product
+      dispatch(createProduct({ name, email }));
     }
     onClose(); // Close the form
   };
@@ -23,7 +24,7 @@ const UserForm = ({ user, onClose }) => {
     <div className="bg-white p-6 rounded-lg">
       <form onSubmit={handleSubmit} className="space-y-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          {user ? 'Edit User' : 'Create User'}
+          {product ? 'Edit Product' : 'Create Product'}
         </h2>
         
         <div className="space-y-4">
@@ -42,14 +43,28 @@ const UserForm = ({ user, onClose }) => {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+              Price
             </label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">
+              Stock
+            </label>
+            <input
+              id="stock"
+              type="number"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
@@ -68,7 +83,7 @@ const UserForm = ({ user, onClose }) => {
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
-            {user ? 'Update' : 'Create'}
+            {product ? 'Update' : 'Create'}
           </button>
         </div>
       </form>
@@ -76,4 +91,4 @@ const UserForm = ({ user, onClose }) => {
   );
 };
 
-export default UserForm;
+export default ProductForm;

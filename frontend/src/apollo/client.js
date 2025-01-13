@@ -19,3 +19,11 @@ export const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
+
+
+// import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+// export const client = new ApolloClient({
+//   uri: 'https://your-graphql-endpoint',
+//   cache: new InMemoryCache(),
+// });
