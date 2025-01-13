@@ -51,7 +51,7 @@ go.work
 go.work.sum
 
 # env file
-/backend/*.env
+backend/*.env
 *.env
 
 *.default.*
