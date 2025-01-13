@@ -23,7 +23,9 @@ type Product {
 
 type Query {
     users: [User!]!
+    user(id: ID!): User!
     products: [Product!]!
+    product(id: ID!): Product!
     currentUser: User
 }
 

@@ -1,11 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { client } from '../apollo/client';
-import { GET_PRODUCTS_QUERY } from '../graphql/queries';
+import { GET_PRODUCTS_QUERY, GET_PRODUCT_QUERY } from '../graphql/queries';
 import { CREATE_PRODUCT_MUTATION, UPDATE_PRODUCT_MUTATION, DELETE_PRODUCT_MUTATION } from '../graphql/mutations';
 
 export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
   const { data } = await client.query({ query: GET_PRODUCTS_QUERY });
   return data.products;
+});
+
+export const fetchProduct = createAsyncThunk('products/fetchProduct', async (id) => {
+  const { data } = await client.query({
+    query: GET_PRODUCT_QUERY,
+    variables: { id },
+  });
+  return data.product;
 });
 
 export const createProduct = createAsyncThunk('products/createProduct', async ({ name, price, stock }) => {
@@ -36,6 +44,7 @@ const productsSlice = createSlice({
   name: 'products',
   initialState: {
     list: [],
+    selectedProduct: null,
     loading: false,
     error: null,
   },
@@ -51,6 +60,18 @@ const productsSlice = createSlice({
         state.loading = false;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProduct.fulfilled, (state, action) => {
+        state.selectedProduct = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })

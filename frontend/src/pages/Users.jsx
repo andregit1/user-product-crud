@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { fetchUsers, deleteUser } from '../features/usersSlice';
 import UserForm from '../components/UserForm';
 
@@ -7,6 +8,7 @@ const Users = () => {
   const { list, loading, error } = useSelector((state) => state.users);
   const { user: loggedInUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [isFormVisible, setFormVisible] = useState(false);
   const [editUser, setEditUser] = useState(null);
@@ -31,6 +33,10 @@ const Users = () => {
   const handleCreate = () => {
     setEditUser(null);
     setFormVisible(true);
+  };
+
+  const handleViewDetails = (id) => {
+    navigate(`/users/${id}`); // Redirect to the UserDetail page
   };
 
   if (!loggedInUser) {
@@ -98,6 +104,12 @@ const Users = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => handleViewDetails(user.id)} // Use handleViewDetails
+                        className="text-blue-500 hover:underline"
+                      >
+                        View Details
+                      </button>
                       <button
                         onClick={() => handleEdit(user)}
                         className="text-indigo-600 hover:text-indigo-900 mr-4"

@@ -7,12 +7,14 @@ package graph
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/andregit1/user-product-crud/database"
 	"github.com/andregit1/user-product-crud/graph/model"
 	"github.com/andregit1/user-product-crud/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -237,6 +239,29 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	return users, nil
 }
 
+// User is the resolver for the user field.
+func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+	collection := database.GetCollection("users")
+
+	// Create an ObjectID from the string ID
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user ID: %v", err)
+	}
+
+	// Find the user by ID
+	var user model.User
+	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("user not found")
+		}
+		return nil, fmt.Errorf("error fetching user: %v", err)
+	}
+
+	return &user, nil
+}
+
 // Products is the resolver for the products field.
 func (r *queryResolver) Products(ctx context.Context) ([]*model.Product, error) {
 	var products []*model.Product
@@ -256,6 +281,29 @@ func (r *queryResolver) Products(ctx context.Context) ([]*model.Product, error) 
 	}
 
 	return products, nil
+}
+
+// Product is the resolver for the product field.
+func (r *queryResolver) Product(ctx context.Context, id string) (*model.Product, error) {
+	collection := database.GetCollection("products")
+
+	// Create an ObjectID from the string ID
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid product ID: %v", err)
+	}
+
+	// Find the product by ID
+	var product model.Product
+	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&product)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("product not found")
+		}
+		return nil, fmt.Errorf("error fetching product: %v", err)
+	}
+
+	return &product, nil
 }
 
 // CurrentUser is the resolver for the currentUser field.
