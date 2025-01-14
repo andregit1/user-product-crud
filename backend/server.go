@@ -21,11 +21,11 @@ const defaultPort = "8080"
 
 func main() {
 	// Load MongoDB connection
-	database.ConnectMongo()
-	// client := database.ConnectMongo()
+	// database.ConnectMongo()
+	client := database.ConnectMongo()
 
 	// Seed data
-	// database.SeedData(client)
+	database.SeedData(client)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -62,9 +62,9 @@ func main() {
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 
-	// if len(os.Args) > 1 && os.Args[1] == "seed" {
-	// 	database.SeedData(client)
-	// 	log.Println("Seeding completed")
-	// 	return
-	// }
+	if len(os.Args) > 1 && os.Args[1] == "seed" {
+		database.SeedData(client)
+		log.Println("Seeding completed")
+		return
+	}
 }

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,44 +14,43 @@ func SeedData(client *mongo.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Example: Seeding the Users collection
-	usersCollection := client.Database("yourDatabaseName").Collection("users")
-
-	// Check if data already exists
-	count, err := usersCollection.CountDocuments(ctx, bson.M{})
-	if err != nil {
-		log.Fatalf("Failed to count documents: %v", err)
+	db := os.Getenv("MONGO_DB_NAME")
+	if db == "" {
+		log.Fatal("MONGO_DB_NAME environment variable is not set")
 	}
 
-	if count > 0 {
-		log.Println("Users collection already seeded")
-		return
-	}
-
-	// Sample data
-	users := []interface{}{
+	// Seed users collection
+	seedCollection(ctx, client, db, "users", []interface{}{
 		bson.M{"name": "Alice", "email": "alice@example.com", "role": "admin"},
 		bson.M{"name": "Bob", "email": "bob@example.com", "role": "user"},
 		bson.M{"name": "Charlie", "email": "charlie@example.com", "role": "user"},
-	}
+	})
 
-	productsCollection := client.Database("yourDatabaseName").Collection("products")
-
-	products := []interface{}{
+	// Seed products collection
+	seedCollection(ctx, client, db, "products", []interface{}{
 		bson.M{"name": "Laptop", "price": 999.99, "category": "Electronics"},
 		bson.M{"name": "Smartphone", "price": 699.99, "category": "Electronics"},
 		bson.M{"name": "Table", "price": 49.99, "category": "Furniture"},
+	})
+}
+
+func seedCollection(ctx context.Context, client *mongo.Client, dbName, collectionName string, data []interface{}) {
+	collection := client.Database(dbName).Collection(collectionName)
+
+	count, err := collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		log.Fatalf("Failed to count documents in collection %s: %v", collectionName, err)
 	}
 
-	_, err = productsCollection.InsertMany(ctx, products)
-	if err != nil {
-		log.Fatalf("Failed to seed products: %v", err)
+	if count > 0 {
+		log.Printf("Collection '%s' is already seeded", collectionName)
+		return
 	}
-	log.Println("Seeded products collection successfully")
 
-	_, err = usersCollection.InsertMany(ctx, users)
+	_, err = collection.InsertMany(ctx, data)
 	if err != nil {
-		log.Fatalf("Failed to seed users: %v", err)
+		log.Fatalf("Failed to seed collection '%s': %v", collectionName, err)
 	}
-	log.Println("Seeded users collection successfully")
+
+	log.Printf("Seeded collection '%s' successfully", collectionName)
 }
