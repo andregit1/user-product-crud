@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -20,12 +21,19 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	// Parse command-line flags
+	seed := flag.Bool("seed", false, "Seed the database and exit")
+	flag.Parse()
+
 	// Load MongoDB connection
-	// database.ConnectMongo()
 	client := database.ConnectMongo()
 
-	// Seed data
-	database.SeedData(client)
+	if *seed {
+		// Seed the database if the `-seed` flag is set
+		database.SeedData(client)
+		log.Println("Seeding completed")
+		return
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -61,10 +69,4 @@ func main() {
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
-
-	if len(os.Args) > 1 && os.Args[1] == "seed" {
-		database.SeedData(client)
-		log.Println("Seeding completed")
-		return
-	}
 }
