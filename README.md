@@ -119,6 +119,30 @@ MONGO_DB_NAME=your_database_name
 
 ---
 
+### Backend Testing with Postman
+
+1. **Import Postman Files:**
+   - Import `postman/local-andre-graphql.postman_environment.json` for environment variables
+   - Import `postman/user-product-graphql.postman_collection.json` for API endpoints collection
+
+2. **Set Up Environment:**
+   - Open Postman and select the imported environment "local-andre-graphql"
+   - Verify the environment variables are correctly set
+
+3. **Available Test Endpoints:**
+   The collection includes GraphQL queries and mutations for:
+   - User Management (Create, Read, Update, Delete)
+   - Product Management (Create, Read, Update, Delete)
+   - Authentication (Login, Token Validation)
+
+4. **Testing Flow:**
+   1. Start with the Login mutation to obtain a JWT token
+   2. The token will be automatically set in the environment variables
+   3. Other requests will use this token for authentication
+   4. Test each endpoint in the collection to verify functionality
+
+---
+
 ### Notes for Developers
 
 #### MongoDB Atlas
